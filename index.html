@@ -12,8 +12,8 @@
     <script>
     function log(str){return false;$('log').html(str+'<br />');}
     function copyCode(str){
-      str=str.replace('"');
-      str=str.replace('"');
+      str=str.replace('"','');
+      str=str.replace('"','');
       var $focused = $(':focus');
       $focused.val(str);
     }
@@ -36,7 +36,6 @@
           canvas.width = video.videoWidth;
           canvas.height = video.videoHeight;
           ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-          //ctx.drawImage(document.getElementById('img'), 15,15, video.videoWidth/2, video.videoHeight/2); test için
           var barcode = new window.BarcodeDetector();
           barcode.detect(canvas).then((data) => {
             log(JSON.stringify(data, null, 2) );
@@ -66,7 +65,6 @@
         <canvas ref="" ></canvas>
       </div>
       <div class="col-9">
-        <barcode></barcode>
       </div>
       <div class="col-12">
         <input type="text" name="i1" class="form-control">
@@ -80,8 +78,6 @@
   </div>
 
 
-
-  <img src="/img/qrcode.png" style="display:none;" id="img" alt="">
   <style media="screen">
     video{
         background:silver;
@@ -92,18 +88,6 @@
     video,canvas{
       border:1px solid black;
       width: 100px;height: 100px;
-    }
-    barcode{
-      width: 100%;
-      height:40px;
-      display:block;
-      border:2px dotted red;
-    }
-    log{
-      height:150px;
-      width:100%;
-      display: block;
-      overflow:auto;
     }
   </style>
   </body>
