@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="tr" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    <title>Duran Can Yılmaz Barcode Example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  </head>
+  <body>
+
+    <script>
+    function log(str){return false;$('log').html(str+'<br />');}
+    function copyCode(str){
+      str=str.replace('"');
+      str=str.replace('"');
+      var $focused = $(':focus');
+      $focused.val(str);
+    }
+    $(document).ready(function(){
+    try {
+      var nav=navigator.mediaDevices.getUserMedia({
+        video: {
+          width: 300,
+          height: 300,
+          facingMode: 'environment'
+          ,zoom:3
+        }
+      }).then(stream => {
+        const video = document.querySelector('video');
+        const canvas = document.querySelector('canvas');
+        video.srcObject = stream;
+        video.play();
+        const ctx = canvas.getContext('2d');
+        setInterval(() => {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+          //ctx.drawImage(document.getElementById('img'), 15,15, video.videoWidth/2, video.videoHeight/2); test için
+          var barcode = new window.BarcodeDetector();
+          barcode.detect(canvas).then((data) => {
+            log(JSON.stringify(data, null, 2) );
+              if (JSON.stringify(data, null, 2).includes('rawValue')) {
+                var box=data[0].boundingBox;
+                var r=6;
+                ctx.beginPath();
+                ctx.lineWidth = r;
+                ctx.strokeStyle = "red";
+                ctx.rect(box.x-r/2,box.y-r/2,box.x+box.width+r/2,box.y+box.height+r/2);
+                ctx.stroke();
+                copyCode( JSON.stringify(data[0].rawValue, null, 2) );
+              }else{
+              }
+            }).catch(err => log(err));
+          },30);
+      });
+    } catch (e) {
+      log(e);
+    }
+    });
+  </script>
+  <div class="container">
+    <div class="row">
+      <div class="col-3">
+        <video ref="" autoPlay muted hidden ></video>
+        <canvas ref="" ></canvas>
+      </div>
+      <div class="col-9">
+        <barcode></barcode>
+      </div>
+      <div class="col-12">
+        <input type="text" name="i1" class="form-control">
+        <input type="text" name="i2" class="form-control">
+        <input type="text" name="i3" class="form-control" focus="true">
+        <input type="text" name="i4" class="form-control">
+        <input type="text" name="i5" class="form-control">
+        <input type="text" name="i6" class="form-control">
+      </div>
+    </div>
+  </div>
+
+
+
+  <img src="/img/qrcode.png" style="display:none;" id="img" alt="">
+  <style media="screen">
+    video{
+        background:silver;
+    }
+    canvas{
+      background:green;
+    }
+    video,canvas{
+      border:1px solid black;
+      width: 100px;height: 100px;
+    }
+    barcode{
+      width: 100%;
+      height:40px;
+      display:block;
+      border:2px dotted red;
+    }
+    log{
+      height:150px;
+      width:100%;
+      display: block;
+      overflow:auto;
+    }
+  </style>
+  </body>
+</html>
